@@ -3,8 +3,10 @@ import { StrictMode, CSSProperties } from 'react';
 import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
-import { ArticleParamsForm } from './components/article-params-form/ArticleParamsForm';
-import { defaultArticleState } from './constants/articleProps';
+import {
+	ArticleParamsForm,
+	ArticleParamsFormCurrent,
+} from './components/article-params-form/ArticleParamsForm';
 
 import './styles/index.scss';
 import styles from './styles/index.module.scss';
@@ -18,11 +20,11 @@ const App = () => {
 			className={clsx(styles.main)}
 			style={
 				{
-					'--font-family': defaultArticleState.fontFamilyOption.value,
-					'--font-size': defaultArticleState.fontSizeOption.value,
-					'--font-color': defaultArticleState.fontColor.value,
-					'--container-width': defaultArticleState.contentWidth.value,
-					'--bg-color': defaultArticleState.backgroundColor.value,
+					'--font-family': ArticleParamsFormCurrent.fontFamilyOption.value,
+					'--font-size': ArticleParamsFormCurrent.fontSizeOption.value,
+					'--font-color': ArticleParamsFormCurrent.fontColor.value,
+					'--container-width': ArticleParamsFormCurrent.contentWidth.value,
+					'--bg-color': ArticleParamsFormCurrent.backgroundColor.value,
 				} as CSSProperties
 			}>
 			<ArticleParamsForm />
@@ -31,8 +33,12 @@ const App = () => {
 	);
 };
 
-root.render(
-	<StrictMode>
-		<App />
-	</StrictMode>
-);
+export function renderApp() {
+	root.render(
+		<StrictMode>
+			<App />
+		</StrictMode>
+	);
+}
+
+renderApp();
