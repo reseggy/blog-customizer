@@ -5,9 +5,10 @@ import { Separator } from '../separator';
 import { RadioGroup } from 'components/radio-group';
 import { useRef, useState, useEffect } from 'react';
 import styles from './ArticleParamsForm.module.scss';
-import { renderApp } from 'src/index';
+import clsx from 'clsx';
 
 import {
+	ArticleStateType,
 	defaultArticleState,
 	OptionType,
 	fontFamilyOptions,
@@ -15,17 +16,13 @@ import {
 	fontColors,
 	backgroundColors,
 	contentWidthArr,
-} from 'src/constants/articleProps';
+} from '../../constants/articleProps';
 
-export const ArticleParamsFormCurrent = {
-	fontFamilyOption: defaultArticleState.fontFamilyOption,
-	fontSizeOption: defaultArticleState.fontSizeOption,
-	fontColor: defaultArticleState.fontColor,
-	backgroundColor: defaultArticleState.backgroundColor,
-	contentWidth: defaultArticleState.contentWidth,
-};
-
-export const ArticleParamsForm = () => {
+export const ArticleParamsForm = ({
+	setArticleState,
+}: {
+	setArticleState: any;
+}) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -47,62 +44,22 @@ export const ArticleParamsForm = () => {
 		};
 	}, [isOpen]);
 
-	const [currentFont, setCurrentFont] = useState(
-		ArticleParamsFormCurrent.fontFamilyOption
-	);
-	const [currentFontSize, setCurrentFontSize] = useState(
-		ArticleParamsFormCurrent.fontSizeOption
-	);
-	const [currentFontColor, setCurrentFontColor] = useState(
-		ArticleParamsFormCurrent.fontColor
-	);
-	const [currentBackgroundColor, setCurrentBackgroundColor] = useState(
-		ArticleParamsFormCurrent.backgroundColor
-	);
-	const [currentContentWidth, setCurrentContentWidth] = useState(
-		ArticleParamsFormCurrent.contentWidth
-	);
+	const [state, setState] = useState(defaultArticleState);
 
-	const handleChangeFont = (font: OptionType) => {
-		setCurrentFont(font);
-	};
-	const handleChangeFontSize = (fontSize: OptionType) => {
-		setCurrentFontSize(fontSize);
-	};
-	const handleChangeFontColor = (fontColor: OptionType) => {
-		setCurrentFontColor(fontColor);
-	};
-	const handleChangeBackgroundColor = (backgroundColor: OptionType) => {
-		setCurrentBackgroundColor(backgroundColor);
-	};
-	const handleChangeContentWidth = (width: OptionType) => {
-		setCurrentContentWidth(width);
+	const handleOnChange = (field: keyof ArticleStateType) => {
+		return (value: OptionType) => {
+			setState((prevState) => ({ ...prevState, [field]: value }));
+		};
 	};
 
-	const handleConfirmAll = () => {
-		ArticleParamsFormCurrent.fontFamilyOption = currentFont;
-		ArticleParamsFormCurrent.fontSizeOption = currentFontSize;
-		ArticleParamsFormCurrent.fontColor = currentFontColor;
-		ArticleParamsFormCurrent.backgroundColor = currentBackgroundColor;
-		ArticleParamsFormCurrent.contentWidth = currentContentWidth;
-		renderApp();
+	const handleSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
+		setArticleState(state);
 	};
 
 	const handleReset = () => {
-		setCurrentFont(defaultArticleState.fontFamilyOption);
-		setCurrentFontSize(defaultArticleState.fontSizeOption);
-		setCurrentFontColor(defaultArticleState.fontColor);
-		setCurrentBackgroundColor(defaultArticleState.backgroundColor);
-		setCurrentContentWidth(defaultArticleState.contentWidth);
-		ArticleParamsFormCurrent.fontFamilyOption =
-			defaultArticleState.fontFamilyOption;
-		ArticleParamsFormCurrent.fontSizeOption =
-			defaultArticleState.fontSizeOption;
-		ArticleParamsFormCurrent.fontColor = defaultArticleState.fontColor;
-		ArticleParamsFormCurrent.backgroundColor =
-			defaultArticleState.backgroundColor;
-		ArticleParamsFormCurrent.contentWidth = defaultArticleState.contentWidth;
-		renderApp();
+		setState(defaultArticleState);
+		setArticleState(defaultArticleState);
 	};
 
 	return (
@@ -110,49 +67,43 @@ export const ArticleParamsForm = () => {
 			<ArrowButton isOpen={isOpen} toggleOpen={() => setIsOpen(!isOpen)} />
 			<aside
 				ref={sidebarRef}
-				className={`${styles.container} ${
-					isOpen ? styles.container_open : ''
-				}`}>
-				<form className={styles.form}>
+				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
+				<form className={styles.form} onSubmit={handleSubmit}>
 					<Select
-						selected={currentFont}
+						selected={state.fontFamilyOption}
 						options={fontFamilyOptions}
 						title={'Шрифт'}
-						onChange={handleChangeFont}
+						onChange={handleOnChange('fontFamilyOption')}
 					/>
 					<RadioGroup
 						name={'fontSize'}
 						options={fontSizeOptions}
-						selected={currentFontSize}
+						selected={state.fontSizeOption}
 						title={'Размер Шрифта'}
-						onChange={handleChangeFontSize}
+						onChange={handleOnChange('fontSizeOption')}
 					/>
 					<Select
-						selected={currentFontColor}
+						selected={state.fontColor}
 						options={fontColors}
 						title={'Цвет Шрифта'}
-						onChange={handleChangeFontColor}
+						onChange={handleOnChange('fontColor')}
 					/>
 					<Separator />
 					<Select
-						selected={currentBackgroundColor}
+						selected={state.backgroundColor}
 						options={backgroundColors}
 						title={'Цвет Фона'}
-						onChange={handleChangeBackgroundColor}
+						onChange={handleOnChange('backgroundColor')}
 					/>
 					<Select
-						selected={currentContentWidth}
+						selected={state.contentWidth}
 						options={contentWidthArr}
 						title={'Ширина Контента'}
-						onChange={handleChangeContentWidth}
+						onChange={handleOnChange('contentWidth')}
 					/>
 					<div className={styles.bottomContainer}>
 						<Button title='Сбросить' type='reset' onClick={handleReset} />
-						<Button
-							title='Применить'
-							type='button'
-							onClick={handleConfirmAll}
-						/>
+						<Button title='Применить' type='submit' />
 					</div>
 				</form>
 			</aside>
