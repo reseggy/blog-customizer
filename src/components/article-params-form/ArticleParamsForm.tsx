@@ -3,6 +3,7 @@ import { Select } from 'components/select';
 import { Button } from 'components/button';
 import { Separator } from '../separator';
 import { RadioGroup } from 'components/radio-group';
+import { Text } from '../text';
 import { useRef, useState, useEffect } from 'react';
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
@@ -18,11 +19,15 @@ import {
 	contentWidthArr,
 } from '../../constants/articleProps';
 
+type SetArticleStateType = (state: ArticleStateType) => void;
+
+interface ArticleParamsFormProps {
+	setArticleState: SetArticleStateType;
+}
+
 export const ArticleParamsForm = ({
 	setArticleState,
-}: {
-	setArticleState: any;
-}) => {
+}: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -44,21 +49,21 @@ export const ArticleParamsForm = ({
 		};
 	}, [isOpen]);
 
-	const [state, setState] = useState(defaultArticleState);
+	const [formState, setFormState] = useState(defaultArticleState);
 
 	const handleOnChange = (field: keyof ArticleStateType) => {
 		return (value: OptionType) => {
-			setState((prevState) => ({ ...prevState, [field]: value }));
+			setFormState((prevState) => ({ ...prevState, [field]: value }));
 		};
 	};
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		setArticleState(state);
+		setArticleState(formState);
 	};
 
 	const handleReset = () => {
-		setState(defaultArticleState);
+		setFormState(defaultArticleState);
 		setArticleState(defaultArticleState);
 	};
 
@@ -69,8 +74,11 @@ export const ArticleParamsForm = ({
 				ref={sidebarRef}
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form className={styles.form} onSubmit={handleSubmit}>
+					<Text size={31} weight={800} uppercase={true}>
+						Задайте параметры
+					</Text>
 					<Select
-						selected={state.fontFamilyOption}
+						selected={formState.fontFamilyOption}
 						options={fontFamilyOptions}
 						title={'Шрифт'}
 						onChange={handleOnChange('fontFamilyOption')}
@@ -78,25 +86,25 @@ export const ArticleParamsForm = ({
 					<RadioGroup
 						name={'fontSize'}
 						options={fontSizeOptions}
-						selected={state.fontSizeOption}
+						selected={formState.fontSizeOption}
 						title={'Размер Шрифта'}
 						onChange={handleOnChange('fontSizeOption')}
 					/>
 					<Select
-						selected={state.fontColor}
+						selected={formState.fontColor}
 						options={fontColors}
 						title={'Цвет Шрифта'}
 						onChange={handleOnChange('fontColor')}
 					/>
 					<Separator />
 					<Select
-						selected={state.backgroundColor}
+						selected={formState.backgroundColor}
 						options={backgroundColors}
 						title={'Цвет Фона'}
 						onChange={handleOnChange('backgroundColor')}
 					/>
 					<Select
-						selected={state.contentWidth}
+						selected={formState.contentWidth}
 						options={contentWidthArr}
 						title={'Ширина Контента'}
 						onChange={handleOnChange('contentWidth')}
